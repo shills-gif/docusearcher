@@ -16,7 +16,7 @@ def word_frequency(filepath):
     return Counter(words)
 
 if __name__ == "__main__":
-    filepath = "../data/sample.txt"
+    filepath = "./data/sample.txt"
     word_counts = word_frequency(filepath)
     
     print("Word Frequency Count:")
