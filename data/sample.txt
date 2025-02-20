@@ -1,2 +1,0 @@
-Hello world! This is a simple text analysis example.
-Hello again! We are counting word frequency.
