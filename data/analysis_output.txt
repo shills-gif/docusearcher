@@ -1,0 +1,23 @@
+Word Frequency Analysis Comparison
+==================================================
+Word	2024 (%)	2025 (%)	Difference (%)
+ai	12.38	12.18	-0.20
+generalpurpose	6.41	5.09	-1.32
+models	4.06	4.08	0.02
+systems	4.23	3.28	-0.95
+data	2.55	3.36	0.81
+risks	1.80	3.23	1.43
+model	2.01	2.38	0.37
+report	2.96	1.11	-1.85
+risk	1.19	2.61	1.41
+language	2.01	1.75	-0.26
+capabilities	1.67	1.97	0.30
+training	1.51	1.92	0.41
+safety	1.86	1.13	-0.73
+international	1.96	0.84	-1.12
+conference	1.70	1.06	-0.65
+learning	1.60	1.09	-0.51
+information	1.20	1.35	0.14
+large	1.13	1.19	0.06
+research	1.10	1.21	0.11
+system	0.99	1.32	0.33

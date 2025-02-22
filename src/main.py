@@ -27,7 +27,7 @@ else:
     BASE_DIR = os.path.abspath(os.getcwd())
 
 # Define paths relative to the project root
-PDF_PATH = os.path.join(BASE_DIR, "data", "International_AI_Safety_Report_2025.pdf")
+PDF_PATH = os.path.join(BASE_DIR, "data", "international_scientific_report_ai_interim_2024.pdf")
 OUTPUT_DIR = os.path.join(BASE_DIR, "data")
 
 # Define the number of top words to analyze
