@@ -1,0 +1,32 @@
+Words Unique to 2024 (File 1)
+==================================================
+Word	Relative Frequency (%)	Grouped
+Word	Relative Frequency (%)	Grouped
+advanced	1.55	
+scientific	1.42	
+interim	1.26	
+fairness	0.72	
+general	0.62	
+2020	0.61	
+progress	0.54	
+might	0.51	
+purpose	0.50	
+linguistics	0.46	
+neurips	0.46	
+factors	0.46	
+2019	0.44	
+tools	0.43	
+machinery	0.43	
+representations	0.43	
+experts	0.43	
+transparency	0.42	
+attacks	0.42	
+datasets	0.42	
+text	0.41	
+outputs	0.41	
+scale	0.40	
+deployment	0.39	
+acm	0.39	
+limited	0.38	
+trained	0.38	
+iclr	0.38	

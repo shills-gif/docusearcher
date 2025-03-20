@@ -1,4 +1,4 @@
-Full Comparison (All Words)
+Matching Words Only
 ==================================================
 Total Word Count - 2024: 13144 (File 1), 2025: 21695 (File 2)
 Word	2024 (%)	2025 (%)	Difference (%)	Grouped
@@ -28,19 +28,16 @@ new	0.56	1.26	0.70
 tasks	0.62	1.05	0.43	
 methods	0.75	0.88	0.13	
 content	0.53	1.05	0.51	
-advanced	1.55	0.00	-1.55	
 development	0.72	0.83	0.12	
 machine	0.81	0.65	-0.16	
 association	0.91	0.56	-0.34	
 technical	0.57	0.87	0.30	
 performance	0.80	0.64	-0.16	
-scientific	1.42	0.00	-1.42	
 2021	0.87	0.53	-0.34	
 potential	0.71	0.66	-0.04	
 neural	0.80	0.52	-0.28	
 processing	0.72	0.57	-0.16	
 developers	0.50	0.77	0.27	
-interim	1.26	0.00	-1.26	
 current	0.58	0.68	0.10	
 privacy	0.52	0.73	0.22	
 bias	0.64	0.60	-0.04	
@@ -58,7 +55,6 @@ future	0.59	0.48	-0.11
 computing	0.64	0.44	-0.20	
 computational	0.59	0.48	-0.11	
 understanding	0.59	0.44	-0.15	
-management	0.00	1.03	1.03	
 cscl	0.44	0.58	0.14	
 technology	0.44	0.56	0.12	
 agents	0.40	0.60	0.20	
@@ -71,36 +67,9 @@ users	0.40	0.56	0.15
 scaling	0.49	0.47	-0.02	
 li	0.49	0.45	-0.05	
 chen	0.49	0.44	-0.05	
-impact	0.00	0.93	0.93	impacts
 work	0.40	0.53	0.13	
 compute	0.49	0.43	-0.06	
 one	0.40	0.49	0.10	
 recent	0.44	0.45	0.01	
-evidence	0.00	0.85	0.85	
-energy	0.00	0.83	0.83	
 even	0.40	0.42	0.02	
 different	0.38	0.42	0.04	
-fairness	0.72	0.00	-0.72	
-general	0.62	0.00	-0.62	
-approaches	0.00	0.61	0.61	
-2020	0.61	0.00	-0.61	
-make	0.00	0.56	0.56	
-companies	0.00	0.56	0.56	
-usa	0.00	0.55	0.55	
-open	0.00	0.55	0.55	
-progress	0.54	0.00	-0.54	
-process	0.00	0.53	0.53	
-harmful	0.00	0.51	0.51	
-might	0.51	0.00	-0.51	
-purpose	0.50	0.00	-0.50	
-security	0.00	0.50	0.50	
-market	0.00	0.49	0.49	
-assessment	0.00	0.47	0.47	
-science	0.00	0.47	0.47	
-since	0.00	0.47	0.47	
-computer	0.00	0.47	0.47	
-monitoring	0.00	0.47	0.47	
-mitigation	0.00	0.47	0.47	
-eg	0.00	0.47	0.47	
-neurips	0.46	0.00	-0.46	
-linguistics	0.46	0.00	-0.46	

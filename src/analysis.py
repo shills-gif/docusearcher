@@ -1,15 +1,10 @@
 import os
-import matplotlib.pyplot as plt
+import csv
 import numpy as np
+from collections import defaultdict
 
 def parse_frequency_file(file_path):
-    """
-    Parses a cumulative frequency file.
-    Expects a header followed by lines in the format: "word: count".
-    Returns two dictionaries:
-      - freq_dict: mapping words to their raw counts.
-      - normalized_dict: mapping words to their relative frequency (count / total words).
-    """
+    """Parses a cumulative frequency file and returns raw counts and normalized frequencies."""
     freq_dict = {}
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
@@ -18,107 +13,125 @@ def parse_frequency_file(file_path):
             parts = line.strip().split(':')
             if len(parts) != 2:
                 continue
-            word = parts[0].strip()
+            word = parts[0].strip().lower()  # Convert to lowercase
             try:
                 count = int(parts[1].strip())
                 freq_dict[word] = count
             except ValueError:
                 continue
-    total_count = sum(freq_dict.values())
+    total_count = sum(freq_dict.values()) or 1  # Prevent division by zero
     normalized_dict = {word: count / total_count for word, count in freq_dict.items()}
-    return freq_dict, normalized_dict
+    return freq_dict, normalized_dict, total_count
 
-def compare_normalized_frequency_files(file1, file2, top_n=100, top_common=20, txt_output_path=None):
-    """
-    Compares two cumulative frequency files using normalized word frequencies.
+def group_plural_words(freq_dict):
+    """Groups singular and plural words together (e.g., risk and risks)."""
+    grouped_dict = defaultdict(int)
+    mapping = defaultdict(list)
+    irregulars = {"children": "child", "mice": "mouse", "geese": "goose"}  # Add common exceptions
     
-    Parameters:
-      file1, file2: Paths to the frequency files.
-      top_n: Consider only the top_n words (by raw frequency) from each file.
-      top_common: From the intersection of the two top_n lists, display the top_common words.
-      txt_output_path: If provided, the raw analysis output will be saved to this text file.
-    
-    The function:
-      1. Parses each file and computes normalized frequencies.
-      2. Limits analysis to the top_n words of each file.
-      3. Finds common words and sorts them by the sum of their normalized frequencies.
-      4. Prints a comparison table.
-      5. Saves the raw table to a text file if a path is provided.
-      6. Visualizes the comparison with a grouped bar chart and a scatter plot.
-    """
-    freq1, norm1 = parse_frequency_file(file1)
-    freq2, norm2 = parse_frequency_file(file2)
-    
-    # Limit to the top_n words by raw count for each file
-    top_words1 = dict(sorted(freq1.items(), key=lambda item: item[1], reverse=True)[:top_n])
-    top_words2 = dict(sorted(freq2.items(), key=lambda item: item[1], reverse=True)[:top_n])
-    
-    # Find common words among the two top_n sets
-    common_words = set(top_words1.keys()).intersection(set(top_words2.keys()))
-    
-    # Sort common words by combined normalized frequency (relative frequency)
-    sorted_common = sorted(common_words, key=lambda w: norm1[w] + norm2[w], reverse=True)
-    display_words = sorted_common[:top_common]
-    
-    # Build and print the comparison table with normalized frequencies as percentages
-    output_lines = []
-    header = "Word\t2024 (%)\t2025 (%)\tDifference (%)"
-    output_lines.append(header)
-    print(header)
-    for word in display_words:
-        freq_2024_percent = norm1[word] * 100
-        freq_2025_percent = norm2[word] * 100
-        diff_percent = freq_2025_percent - freq_2024_percent
-        line = f"{word}\t{freq_2024_percent:.2f}\t{freq_2025_percent:.2f}\t{diff_percent:.2f}"
-        output_lines.append(line)
-        print(line)
+    for word in freq_dict:
+        singular = word
+        if word in irregulars:
+            singular = irregulars[word]
+        elif word.endswith('s') and len(word) > 3 and word[:-1] in freq_dict:
+            singular = word[:-1]
         
-    # Save the raw analysis output into a text file if a path is provided.
-    if txt_output_path:
-        os.makedirs(os.path.dirname(txt_output_path), exist_ok=True)
-        with open(txt_output_path, 'w', encoding='utf-8') as f:
-            f.write("Word Frequency Analysis Comparison\n")
-            f.write("="*50 + "\n")
-            for line in output_lines:
-                f.write(line + "\n")
-        print(f"\nAnalysis successfully saved to {txt_output_path}")
-        
-    # Prepare data for visualization
-    percentages_2024 = [norm1[word] * 100 for word in display_words]
-    percentages_2025 = [norm2[word] * 100 for word in display_words]
-    x = np.arange(len(display_words))
-    width = 0.35
+        grouped_dict[singular] += freq_dict[word]
+        if word != singular:
+            mapping[singular].append(word)
+    
+    return grouped_dict, mapping
 
-    # Create a grouped bar chart
-    fig, ax = plt.subplots(figsize=(12, 6))
-    ax.bar(x - width/2, percentages_2024, width, label='2024')
-    ax.bar(x + width/2, percentages_2025, width, label='2025')
-    ax.set_xlabel('Words')
-    ax.set_ylabel('Relative Frequency (%)')
-    ax.set_title('Comparison of Normalized Word Frequencies')
-    ax.set_xticks(x)
-    ax.set_xticklabels(display_words, rotation=45, ha='right')
-    ax.legend()
-    ax.grid(True, linestyle='--', alpha=0.5)
-    plt.tight_layout()
-    plt.show()
+def compare_frequency_files(file1, file2, top_n=100, txt_output_path=None, csv_output_path=None):
+    """Compares two frequency files and generates analysis for top words, including unique words."""
+    freq1, norm1, total_count1 = parse_frequency_file(file1)
+    freq2, norm2, total_count2 = parse_frequency_file(file2)
 
-    # Create a scatter plot for further comparison
-    plt.figure(figsize=(8, 8))
-    plt.scatter(percentages_2024, percentages_2025, color='purple')
-    plt.xlabel('2024 Relative Frequency (%)')
-    plt.ylabel('2025 Relative Frequency (%)')
-    plt.title('Scatter Plot of Normalized Word Frequencies')
-    max_val = max(max(percentages_2024), max(percentages_2025))
-    plt.plot([0, max_val], [0, max_val], 'r--', label='y = x')
-    plt.legend()
-    plt.grid(True, linestyle='--', alpha=0.5)
-    plt.show()
+    grouped_freq1, mapping1 = group_plural_words(freq1)
+    grouped_freq2, mapping2 = group_plural_words(freq2)
+
+    total_count1 = sum(grouped_freq1.values()) or 1
+    total_count2 = sum(grouped_freq2.values()) or 1
+    norm1 = {word: count / total_count1 for word, count in grouped_freq1.items()}
+    norm2 = {word: count / total_count2 for word, count in grouped_freq2.items()}
+
+    all_words = set(grouped_freq1.keys()).union(set(grouped_freq2.keys()))
+    common_words = set(grouped_freq1.keys()).intersection(set(grouped_freq2.keys()))
+
+    sorted_all_words = sorted(all_words, key=lambda w: norm1.get(w, 0) + norm2.get(w, 0), reverse=True)[:top_n]
+    
+    unique_to_file1 = sorted(set(grouped_freq1.keys()) - common_words, key=lambda w: norm1.get(w, 0), reverse=True)[:top_n]
+    unique_to_file2 = sorted(set(grouped_freq2.keys()) - common_words, key=lambda w: norm2.get(w, 0), reverse=True)[:top_n]
+
+    def generate_analysis(word_list, title, txt_file, csv_file, norm_dict, mapping_dict):
+        output_lines = []
+        header = "Word\tRelative Frequency (%)\tGrouped"
+        output_lines.append(header)
+        print(f"\n{title}")
+        print(header)
+
+        csv_data = [["Word", "Relative Frequency (%)", "Grouped"]]
+
+        for word in word_list:
+            freq_percent = norm_dict.get(word, 0) * 100
+            grouped_words = ', '.join(mapping_dict.get(word, []))
+            
+            line = f"{word}\t{freq_percent:.2f}\t{grouped_words}"
+            output_lines.append(line)
+            csv_data.append([word, f"{freq_percent:.2f}", grouped_words])
+            print(line)
+
+        # Save to text file
+        if txt_file:
+            os.makedirs(os.path.dirname(txt_file), exist_ok=True)
+            with open(txt_file, 'w', encoding='utf-8') as f:
+                f.truncate(0)  # Clear old data
+                f.write(f"{title}\n")
+                f.write("="*50 + "\n")
+                f.write(header + "\n")
+                for line in output_lines:
+                    f.write(line + "\n")
+            print(f"\nAnalysis successfully saved to {txt_file}")
+
+        # Save to CSV file
+        if csv_file:
+            os.makedirs(os.path.dirname(csv_file), exist_ok=True)
+            with open(csv_file, 'w', encoding='utf-8', newline='') as f:
+                f.truncate(0)  # Clear old data
+                writer = csv.writer(f)
+                writer.writerow(["Total Word Count", f"2024: {total_count1} (File 1)", f"2025: {total_count2} (File 2)", "", ""])
+                writer.writerows(csv_data)
+            print(f"\nAnalysis successfully saved to {csv_file}")
+
+    # Generate reports for words unique to each file
+    generate_analysis(unique_to_file1, "Words Unique to 2024 (File 1)", 
+                      txt_output_path.replace(".txt", "_unique_2024.txt"), 
+                      csv_output_path.replace(".csv", "_unique_2024.csv"),
+                      norm1, mapping1)
+
+    generate_analysis(unique_to_file2, "Words Unique to 2025 (File 2)", 
+                      txt_output_path.replace(".txt", "_unique_2025.txt"), 
+                      csv_output_path.replace(".csv", "_unique_2025.csv"),
+                      norm2, mapping2)
 
 if __name__ == "__main__":
-    # Paths to the cumulative frequency files (adjust if needed)
-    file_2024 = os.path.join("data", "cum_freq_2024.txt")
-    file_2025 = os.path.join("data", "cum_freq_2025.txt")
-    # Define the path for the text file output in the data folder
-    txt_output = os.path.join("data", "analysis_output.txt")
-    compare_normalized_frequency_files(file_2024, file_2025, top_n=100, top_common=20, txt_output_path=txt_output)
+    # Ensure the script finds files relative to its own directory
+    base_dir = os.path.dirname(os.path.abspath(__file__))  
+
+    file_2024 = os.path.join(base_dir, "..", "data", "cum_freq_2024.txt")
+    file_2025 = os.path.join(base_dir, "..", "data", "cum_freq_2025.txt")
+
+    txt_output = os.path.join(base_dir, "..", "data", "analysis_output.txt")
+    csv_output = os.path.join(base_dir, "..", "data", "analysis_output.csv")
+
+    # Verify files exist before proceeding
+    if not os.path.exists(file_2024):
+        print(f"Error: File not found -> {file_2024}")
+        exit(1)
+
+    if not os.path.exists(file_2025):
+        print(f"Error: File not found -> {file_2025}")
+        exit(1)
+
+    compare_frequency_files(file_2024, file_2025, top_n=100, txt_output_path=txt_output, csv_output_path=csv_output)
+
